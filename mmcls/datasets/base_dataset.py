@@ -77,7 +77,8 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
 
     def prepare_data(self, idx):
         results = copy.deepcopy(self.data_infos[idx])
-        return self.pipeline(results)
+        results = self.pipeline(results)
+        return results
 
     def __len__(self):
         return len(self.data_infos)

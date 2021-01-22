@@ -31,12 +31,20 @@ class Bottleneck(_Bottleneck):
     """
 
     def __init__(self,
-                 in_channels,
-                 out_channels,
+                 #in_channels,
+                 #out_channels,
+                 inplanes,
+                 planes,
                  base_channels=64,
                  groups=32,
                  width_per_group=4,
                  **kwargs):
+        in_channels = inplanes
+        out_channels = planes * self.expansion
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.mid_channels = planes
+
         super(Bottleneck, self).__init__(in_channels, out_channels, **kwargs)
         self.groups = groups
         self.width_per_group = width_per_group
@@ -137,7 +145,7 @@ class ResNeXt(ResNet):
     def __init__(self, depth, groups=32, width_per_group=4, **kwargs):
         self.groups = groups
         self.width_per_group = width_per_group
-        super(ResNeXt, self).__init__(depth, **kwargs)
+        super(ResNeXt, self).__init__(depth=depth, **kwargs)
 
     def make_res_layer(self, **kwargs):
         return ResLayer(

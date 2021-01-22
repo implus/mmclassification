@@ -1,0 +1,81 @@
+172.16.10.53:
+./tools/dist_train.sh configs/implus/resnet50_baseline.py 8
+
+172-16-10-62:
+./tools/dist_train.sh configs/implus/res2net50_baseline.py 8
+
+172-16-10-41:
+./tools/dist_train.sh configs/implus/sk2net50_baseline.py 8
+
+172-16-30-38:
+./tools/dist_train.sh configs/implus/sk2net50_baseline_2.py 8
+
+10-9-3-58:
+./tools/dist_train.sh configs/implus/sk2net50_aug_cos_mixup.py 8
+
+172-16-30-35:
+./tools/dist_train.sh configs/implus/sk2net50_aug_cos_mixup_nocjlt.py 8
+
+172-16-10-52
+./tools/dist_train.sh configs/implus/cifar_resnet50.py 8
+./tools/dist_train.sh configs/implus/cifar10_sk2net50.py 8
+./tools/dist_train.sh configs/implus/cifar100_resnext29_8x64.py 8
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x6.py 8
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_group.py 8  # group sk 
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_g48_ncm.py 8  # group sk 
+
+172-16-10-58
+./tools/dist_train.sh configs/implus/cifar100_resnet50.py 8
+./tools/dist_train.sh configs/implus/cifar10_resnext29_8x64.py 8
+./tools/dist_train.sh configs/implus/cifar100_res2next29_6x24x6.py 8
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x6_group.py 8  # group sk 
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_group_ncm.py 8  # group sk 
+./tools/dist_train.sh configs/implus/cifar100_res2next29_6x24x4.py 8
+
+172-16-10-55
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x6_group_ncm.py 8  # group sk 
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x6_g72_ncm.py 8  # group sk 
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_r48.py 8   
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_skg72.py 8
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_skg48_gc.py 8
+./tools/dist_train.sh configs/implus/cifar100_res2next29_6x24x4.py 8
+./tools/dist_train.sh configs/implus/cifar100_seres2next29_6x24x4.py 8
+
+172-16-10-40
+./tools/dist_train.sh configs/implus/cifar100_sk2net50.py 8
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x6_g72.py 8  # group sk 
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_skg144.py 8
+./tools/dist_train.sh configs/implus/100e_seresnet50.py 8
+./tools/dist_train.sh configs/implus/100e_sk2resnest50.py 8
+./tools/dist_train.sh configs/implus/100e_sk2resnet50_at.py 8
+./tools/dist_train.sh configs/implus/100e_resnest50.py 8
+
+172-16-10-64
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_g48.py 8  # group sk 
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_skg48.py 8
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_skg72_gc.py 8
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_skg72.py 8
+./tools/dist_train.sh configs/implus/resnet50_baseline.py 8
+./tools/dist_train.sh configs/implus/100e_resnest50.py 8
+./tools/dist_train.sh configs/implus/100e_sk2resnet50_af.py 8
+
+172-16-30-37
+./tools/dist_train.sh configs/implus/cifar100_sk2next29_6x24x4_r72.py 8   
+./tools/dist_train.sh configs/implus/100e_sk2resnest50_af.py 8
+
+172-16-10-37
+./tools/dist_train.sh configs/implus/100e_cyclenet50.py 8
+./tools/dist_train.sh configs/implus/100e_skresnest50.py 8
+./tools/dist_train.sh configs/implus/100e_sacresnet50.py 8
+
+172-16-10-56:
+./tools/dist_train.sh configs/implus/100e_repvggnet50.py 8
+
+172-16-30-55:
+
+172-16-10-55:
+./tools/dist_train.sh configs/implus/100e_skresnet50.py 8
+
+172-16-10-43:
+./tools/dist_train.sh configs/implus/100e_resnext50.py 8
+

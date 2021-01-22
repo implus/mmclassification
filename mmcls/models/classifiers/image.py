@@ -52,6 +52,8 @@ class ImageClassifier(BaseClassifier):
         Returns:
             dict[str, Tensor]: a dictionary of loss components
         """
+        #TODO cutmix or mixup add here !!!
+        # head.forward_train should add gt_a, gt_b and lam parameters
         x = self.extract_feat(img)
 
         losses = dict()

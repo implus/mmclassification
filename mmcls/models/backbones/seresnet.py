@@ -14,9 +14,9 @@ class SEBottleneck(Bottleneck):
         se_ratio (int): Squeeze ratio in SELayer. Default: 16
     """
 
-    def __init__(self, in_channels, out_channels, se_ratio=16, **kwargs):
-        super(SEBottleneck, self).__init__(in_channels, out_channels, **kwargs)
-        self.se_layer = SELayer(out_channels, ratio=se_ratio)
+    def __init__(self, inplanes, planes, se_ratio=16, **kwargs):
+        super(SEBottleneck, self).__init__(inplanes, planes, **kwargs)
+        self.se_layer = SELayer(planes * self.expansion, ratio=se_ratio)
 
     def forward(self, x):
 

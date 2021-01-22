@@ -115,3 +115,7 @@ work_dirs/
 
 # Pytorch
 *.pth
+
+tmp
+tmp/*
+tmp.txt

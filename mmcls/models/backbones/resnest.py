@@ -6,7 +6,7 @@ from mmcv.cnn import build_conv_layer, build_norm_layer
 
 from ..builder import BACKBONES
 from .resnet import Bottleneck as _Bottleneck
-from .resnet import ResLayer, ResNetV1d
+from .resnet import ResLayer, ResNetV1d, ResNet
 
 
 class RSoftmax(nn.Module):
@@ -159,15 +159,23 @@ class Bottleneck(_Bottleneck):
     """
 
     def __init__(self,
-                 in_channels,
-                 out_channels,
+                 #in_channels,
+                 #out_channels,
+                 inplanes,
+                 planes,
                  groups=1,
                  width_per_group=4,
                  base_channels=64,
                  radix=2,
                  reduction_factor=4,
                  avg_down_stride=True,
+                 avg_down_after=True,
                  **kwargs):
+        in_channels = inplanes
+        out_channels = planes * self.expansion
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.mid_channels = planes
         super(Bottleneck, self).__init__(in_channels, out_channels, **kwargs)
 
         self.groups = groups
@@ -182,6 +190,7 @@ class Bottleneck(_Bottleneck):
                 groups * width_per_group * self.mid_channels // base_channels)
 
         self.avg_down_stride = avg_down_stride and self.conv2_stride > 1
+        self.avg_down_after = avg_down_after
 
         self.norm1_name, norm1 = build_norm_layer(
             self.norm_cfg, self.mid_channels, postfix=1)
@@ -200,7 +209,7 @@ class Bottleneck(_Bottleneck):
             self.mid_channels,
             self.mid_channels,
             kernel_size=3,
-            stride=1 if self.avg_down_stride else self.conv2_stride,
+            stride=1, # if self.avg_down_stride else self.conv2_stride,
             padding=self.dilation,
             dilation=self.dilation,
             groups=groups,
@@ -230,9 +239,12 @@ class Bottleneck(_Bottleneck):
             out = self.norm1(out)
             out = self.relu(out)
 
+            if self.avg_down_stride and not self.avg_down_after:
+                out = self.avd_layer(out)
+
             out = self.conv2(out)
 
-            if self.avg_down_stride:
+            if self.avg_down_stride and self.avg_down_after:
                 out = self.avd_layer(out)
 
             out = self.conv3(out)
@@ -256,7 +268,7 @@ class Bottleneck(_Bottleneck):
 
 
 @BACKBONES.register_module()
-class ResNeSt(ResNetV1d):
+class ResNeSt(ResNet):
     """ResNeSt backbone.
 
     Please refer to the `paper <https://arxiv.org/pdf/2004.08955.pdf>`_ for
@@ -317,14 +329,19 @@ class ResNeSt(ResNetV1d):
                  width_per_group=4,
                  radix=2,
                  reduction_factor=4,
-                 avg_down_stride=True,
+                 avg_down_stride=True, # always true
+                 avg_down_after=True,
+                 deep_stem=True,
+                 avg_down=True,
                  **kwargs):
         self.groups = groups
         self.width_per_group = width_per_group
         self.radix = radix
         self.reduction_factor = reduction_factor
         self.avg_down_stride = avg_down_stride
-        super(ResNeSt, self).__init__(depth=depth, **kwargs)
+        self.avg_down_after = avg_down_after
+        super(ResNeSt, self).__init__(depth=depth, 
+            deep_stem=deep_stem, avg_down=avg_down, **kwargs)
 
     def make_res_layer(self, **kwargs):
         return ResLayer(
@@ -334,4 +351,5 @@ class ResNeSt(ResNetV1d):
             radix=self.radix,
             reduction_factor=self.reduction_factor,
             avg_down_stride=self.avg_down_stride,
+            avg_down_after=self.avg_down_after,
             **kwargs)

@@ -15,6 +15,8 @@ from mmcls.datasets import build_dataset
 from mmcls.models import build_classifier
 from mmcls.utils import collect_env, get_root_logger
 
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning)
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a model')
@@ -51,6 +53,8 @@ def parse_args():
         default='none',
         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
+    parser.add_argument('--autoscale_lr', action='store_true',
+        help='auto scale lr with the number of gpus')
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -98,6 +102,24 @@ def main():
     timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
     log_file = osp.join(cfg.work_dir, f'{timestamp}.log')
     logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
+
+    if distributed:
+        if args.autoscale_lr:
+            old_lr = cfg.optimizer['lr']
+            samples_per_gpu = cfg.data['samples_per_gpu']
+            cfg.optimizer['lr'] = old_lr * world_size * samples_per_gpu / 256.
+            logger.info(f"{world_size} gpus, autoscale lr from {old_lr} to {cfg.optimizer['lr']}")
+
+            old_warmup_ratio = cfg.lr_config['warmup_ratio']
+            warmup_ratio = 0.1 / cfg.optimizer['lr'] 
+            cfg.lr_config['warmup_ratio'] = warmup_ratio
+            logger.info(f"warmup ratio {old_warmup_ratio} is changed to {warmup_ratio}")
+
+            #TODO compatible for other datasets
+            warmup_iters = 5005. * 5 * 8 / world_size * 32 / samples_per_gpu
+            old_warmup = cfg.lr_config['warmup_iters']
+            cfg.lr_config['warmup_iters'] = warmup_iters
+            logger.info(f"warmup iters {old_warmup} is changed to {warmup_iters}")
 
     # init the meta dict to record some important information such as
     # environment info and seed, which will be logged

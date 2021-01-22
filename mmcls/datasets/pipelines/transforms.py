@@ -1,10 +1,13 @@
 import inspect
 import math
 import random
+import numpy
+import torch
 
 import mmcv
 import numpy as np
 
+from PIL import Image
 from ..builder import PIPELINES
 
 try:
@@ -14,6 +17,45 @@ except ImportError:
     albumentations = None
     Compose = None
 
+from .autoaugment import ImageNetPolicy
+from .color import ColorJitter, Lighting
+
+@PIPELINES.register_module()
+class ImageNetAutoAug(object):
+    #TODO
+    def __init__(self) -> None:
+        self.IP = ImageNetPolicy()
+
+    def __call__(self, results):
+        """
+        Args:
+            img (ndarray): Image to be cropped.
+        """
+        for key in results.get('img_fields', ['img']):
+            img = Image.fromarray(results[key])
+            results[key] = numpy.asarray(self.IP(img))
+        return results
+
+@PIPELINES.register_module()
+class ColorJitterLighting(object):
+    def __init__(self) -> None:
+        self.CJ = ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4)
+        self.LT = Lighting(alphastd=0.1,
+                           eigval=[0.2175, 0.0188, 0.0045],
+                           eigvec=[[-0.5675, 0.7192, 0.4009],
+                                   [-0.5808, -0.0045, -0.8140],
+                                   [-0.5836, -0.6948, 0.4203]])
+    def __call__(self, results):
+        """
+        Args:
+            img (ndarray): Image to be cropped.
+        """
+        for key in results.get('img_fields', ['img']):
+            img = results[key]
+            img = self.CJ(img)
+            img = self.LT(img)
+            results[key] = img
+        return results
 
 @PIPELINES.register_module()
 class RandomCrop(object):
@@ -463,7 +505,6 @@ class CenterCrop(object):
     def __repr__(self):
         return self.__class__.__name__ + f'(crop_size={self.crop_size})'
 
-
 @PIPELINES.register_module()
 class Normalize(object):
     """Normalize the image.
@@ -482,7 +523,8 @@ class Normalize(object):
 
     def __call__(self, results):
         for key in results.get('img_fields', ['img']):
-            results[key] = mmcv.imnormalize(results[key], self.mean, self.std,
+            img = results[key]
+            results[key] = mmcv.imnormalize(img, self.mean, self.std,
                                             self.to_rgb)
         results['img_norm_cfg'] = dict(
             mean=self.mean, std=self.std, to_rgb=self.to_rgb)
